@@ -5,6 +5,8 @@
 /// ---------------------------------------------------------------------------------------------------------------------------------------------------------
 Title::Title(std::vector<int>& t_mapChip, std::string& t_filePath)
 {
+	endFlag = false;
+
 	vp_mapChip = &t_mapChip;
 
 	stepNowNum = STEPNUMBER::chip;

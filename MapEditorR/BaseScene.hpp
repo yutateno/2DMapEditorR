@@ -25,6 +25,9 @@ namespace BASICPARAM
 */
 class BaseScene
 {
+protected:
+	bool endFlag;
+
 public:
 	// 描画
 	virtual void Draw() = 0;
@@ -34,5 +37,8 @@ public:
 
 	// マップチップの追加
 	virtual void AddDragAndDrop(char t_path[]) = 0;
+
+	// 強制的に終了させる
+	bool GetEnd() { return endFlag; }
 };
 

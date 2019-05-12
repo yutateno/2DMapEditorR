@@ -15,9 +15,10 @@ void MapEditor::LoadMap()
 	readFileCSV = (p_filePath->find(".csv") != -1);
 
 	// ƒtƒ@ƒCƒ‹“Ç‚Ýž‚ÝŽ¸”s
-	if (readFile.fail())
+	if ((p_filePath->find(".csv") == -1) && (p_filePath->find(".txt") == -1))
 	{
-
+		endFlag = true;
+		return;
 	}
 	else
 	{
@@ -27,8 +28,8 @@ void MapEditor::LoadMap()
 			{
 				std::string token;
 				std::istringstream stream(readLine);
-
-				vv_mapdata.resize(readCount + 1);
+				int tempReadCount = readCount + 1;
+				vv_mapdata.resize(tempReadCount);
 
 				while (std::getline(stream, token, ','))
 				{
@@ -41,7 +42,8 @@ void MapEditor::LoadMap()
 		{
 			while (std::getline(readFile, readLine))
 			{
-				vv_mapdata.resize(readCount + 1);
+				int tempReadCount = readCount + 1;
+				vv_mapdata.resize(tempReadCount);
 
 				for (int i = 0, n = static_cast<int>(readLine.length()); i < n; ++i)
 				{
@@ -63,6 +65,8 @@ void MapEditor::LoadMap()
 /// ---------------------------------------------------------------------------------------------------------------------------------------------------------
 MapEditor::MapEditor(std::vector<int>& t_mapChip, std::string& t_filePath)
 {
+	endFlag = false;
+
 	vp_mapChip = &t_mapChip;
 
 	p_filePath = &t_filePath;

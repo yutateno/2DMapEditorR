@@ -45,4 +45,7 @@ public:
 	{
 		p_baseMove->AddDragAndDrop(t_path);
 	}
+
+	// ‹­§I—¹‚³‚¹‚é
+	bool GetEnd() { return p_baseMove->GetEnd(); }
 };
