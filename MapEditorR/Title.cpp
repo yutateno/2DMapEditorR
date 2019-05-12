@@ -3,6 +3,32 @@
 
 
 /// ---------------------------------------------------------------------------------------------------------------------------------------------------------
+void Title::CreateMap(const bool t_fileCSV)
+{
+	std::ofstream saveFile(p_filePath->c_str());
+
+	if (t_fileCSV)
+	{
+		for (int i = 0; i != 2; ++i)
+		{
+			saveFile << "1,1,1,1" << std::endl;
+		}
+	}
+	else
+	{
+		for (int i = 0; i != 2; ++i)
+		{
+			saveFile << "1111" << std::endl;
+		}
+	}
+
+	// ƒtƒ@ƒCƒ‹‚ð•Â‚¶‚é
+	saveFile.close();
+}
+
+
+
+/// ---------------------------------------------------------------------------------------------------------------------------------------------------------
 Title::Title(std::vector<int>& t_mapChip, std::string& t_filePath)
 {
 	endFlag = false;
@@ -131,11 +157,13 @@ void Title::Process()
 		if (MouseData::GetClick(2) == 1)
 		{
 			*p_filePath = "Map\\Save.csv";
+			CreateMap(true);
 			stepNowNum = STEPNUMBER::nextScene;
 		}
 		if (MouseData::GetClick(1) == 1)
 		{
 			*p_filePath = "Map\\Save.txt";
+			CreateMap(false);
 			stepNowNum = STEPNUMBER::nextScene;
 		}
 		break;

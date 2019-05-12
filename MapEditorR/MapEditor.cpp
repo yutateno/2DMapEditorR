@@ -43,9 +43,9 @@ void MapEditor::LoadMap()
 			int tempReadCount = readCount + 1;
 			vv_mapdata.resize(tempReadCount);
 
-			for (int i = 0, n = static_cast<int>(readLine.length()); i < n; ++i)
+			for (int i = 0, n = static_cast<int>(readLine.length()); i < n; chipDoubleDigitID ? i += 2 : ++i)
 			{
-				vv_mapdata[readCount].push_back(readLine.substr(i, 1));
+				vv_mapdata[readCount].push_back(readLine.substr(i, chipDoubleDigitID ? 2 : 1));
 			}
 
 			readCount++;
@@ -105,6 +105,21 @@ void MapEditor::SaveMap()
 
 
 /// ---------------------------------------------------------------------------------------------------------------------------------------------------------
+void MapEditor::MapChipDraw(const int t_areaX, const int t_areaY, const int t_chipID)
+{
+	if (vp_mapChip->size() <= t_chipID)
+	{
+		DrawBox(t_areaY * mapChipSizeY, t_areaX * mapChipSizeX, (t_areaY + 1) * mapChipSizeY, (t_areaX + 1) * mapChipSizeX, GetColor(50, 50, 50), true);
+	}
+	else
+	{
+		DrawGraph(t_areaY * mapChipSizeY, t_areaX * mapChipSizeX, vp_mapChip->at(t_chipID), false);
+	}
+}
+
+
+
+/// ---------------------------------------------------------------------------------------------------------------------------------------------------------
 MapEditor::MapEditor(std::vector<int>& t_mapChip, std::string& t_filePath)
 {
 	endFlag = false;
@@ -123,6 +138,10 @@ MapEditor::MapEditor(std::vector<int>& t_mapChip, std::string& t_filePath)
 	vv_mapdata.clear();
 
 	LoadMap();
+
+	selectMapChipWindow = false;
+
+	GetGraphSize(vp_mapChip->at(0), &mapChipSizeX, &mapChipSizeY);
 }
 
 
@@ -139,23 +158,24 @@ MapEditor::~MapEditor()
 /// ---------------------------------------------------------------------------------------------------------------------------------------------------------
 void MapEditor::Draw()
 {
-	if (vp_mapChip->size() != 0)
-	{
-		for (int i = 0, n = static_cast<int>(vp_mapChip->size()); i != n; ++i)
-		{
-			DrawGraph(i * 15, 0, vp_mapChip->at(i), true);
-		}
-	}
-
 	for (int i = 0, n = static_cast<int>(vv_mapdata.size()); i != n; ++i)
 	{
 		for (int j = 0, m = static_cast<int>(vv_mapdata[i].size()); j != m; ++j)
 		{
-			DrawFormatString(j * 5, 240 + i * 5, GetColor(255, 255, 255), "%d", stoi(vv_mapdata[i][j]));
+			MapChipDraw(i, j, stoi(vv_mapdata[i][j]));
 		}
 	}
 
-	DrawFormatString(0, 120, GetColor(255, 255, 255), "%s", p_filePath->c_str());
+	if (selectMapChipWindow)
+	{
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 190);
+		DrawBox(0, 0, 640, 480, GetColor(125, 125, 125), true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+
+	
+	DrawBox(0, 480, 640, 520, GetColor(0, 0, 0), true);
+	DrawFormatString(0, 500, GetColor(255, 255, 255), "ホイールクリックでセーブ。左または右Ctrlでマップチップ選択画面");
 }
 
 
@@ -166,11 +186,14 @@ void MapEditor::Process()
 	GetMousePoint(&mouseX, &mouseY);
 
 
-	if (MouseData::GetClick(0) == 1)
+	if (MouseData::GetClick(2) == 1)
 	{
 		SaveMap();
 	}
 
 
-	if (KeyData::Get(KEY_INPUT_1) == 1) BASICPARAM::e_nowScene = ESceneNumber::TITLE;
+	if (KeyData::Get(KEY_INPUT_LCONTROL) == 1 || KeyData::Get(KEY_INPUT_RCONTROL) == 1)
+	{
+		selectMapChipWindow = !selectMapChipWindow;
+	}
 }

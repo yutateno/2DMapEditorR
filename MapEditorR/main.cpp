@@ -12,7 +12,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	SetWindowText("MapEditorR");
 	ChangeWindowMode(TRUE);
-	SetGraphMode(640, 480, 32);
+	SetGraphMode(640, 520, 32);
 	DxLib_Init();
 	SetAlwaysRunFlag(TRUE);
 	SetDrawScreen(DX_SCREEN_BACK);

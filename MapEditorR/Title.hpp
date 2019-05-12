@@ -2,6 +2,8 @@
 #include "BaseScene.hpp"
 #include "Basic.hpp"
 #include "Input.hpp"
+#include <fstream>
+#include <sstream>
 
 
 
@@ -26,6 +28,9 @@ private:
 
 	// 書き込むファイルのパス
 	std::string* p_filePath;
+
+	// 適当なファイルを作成したときの仮マップ
+	void CreateMap(const bool t_fileCSV);
 
 
 public:

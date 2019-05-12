@@ -37,6 +37,15 @@ private:
 	// マウスの位置
 	int mouseX, mouseY;
 
+	// マップチップ選択画面の表示
+	bool selectMapChipWindow;
+
+	// マップチップのサイズを調べる
+	int mapChipSizeX, mapChipSizeY;
+
+	// マップチップの一つを描画する
+	void MapChipDraw(const int t_areaX, const int t_areaY, const int t_chipID);
+
 
 public:
 	MapEditor(std::vector<int>& t_mapChip, std::string& t_filePath);
