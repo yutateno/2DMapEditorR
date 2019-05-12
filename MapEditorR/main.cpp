@@ -12,9 +12,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	SetWindowText("MapEditorR");
 	ChangeWindowMode(TRUE);
-	DxLib_Init();
 	SetGraphMode(640, 480, 32);
+	DxLib_Init();
+	SetAlwaysRunFlag(TRUE);
 	SetDrawScreen(DX_SCREEN_BACK);
+
+	SetDragFileValidFlag(TRUE);
 
 
 	Manager manager = Manager();
@@ -27,6 +30,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		MouseWheelData::MouseWheel_Update();
 
 		manager.Update();
+
+		if (GetDragFileNum() > 0)
+		{
+			char filePath[MAX_PATH];
+
+			// ドラッグ＆ドロップされたファイルのパスを取得する
+			GetDragFilePath(filePath);
+
+			// ドラッグ＆ドロップされたファイルを画像として読み込む
+			manager.GetAddMapChipPath(filePath);
+		}
 	}
 
 	manager.~Manager();

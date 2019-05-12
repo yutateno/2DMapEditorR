@@ -2,8 +2,9 @@
 
 
 
-MapEditor::MapEditor()
+MapEditor::MapEditor(std::vector<int>& t_mapChip)
 {
+	vp_mapChip = &t_mapChip;
 }
 
 
@@ -16,7 +17,13 @@ MapEditor::~MapEditor()
 
 void MapEditor::Draw()
 {
-	printfDx("MapEditor\n");
+	if (vp_mapChip->size() != 0)
+	{
+		for (int i = 0, n = static_cast<int>(vp_mapChip->size()); i != n; ++i)
+		{
+			DrawGraph(i * 15, 0, vp_mapChip->at(i), true);
+		}
+	}
 }
 
 

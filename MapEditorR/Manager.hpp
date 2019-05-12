@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseScene.hpp"
+#include <vector>
 
 #include "Title.hpp"
 #include "MapEditor.hpp"
@@ -21,6 +22,10 @@ private:
 	void SceneChange();
 
 
+	// マップチップ素材
+	std::vector<int> v_mapChip;
+
+
 public:
 	// コンストラクタ
 	Manager();
@@ -31,4 +36,11 @@ public:
 
 	// メインプロセス
 	void Update();
+
+
+	// 素材受け取り
+	void GetAddMapChipPath(char t_path[])
+	{
+		p_baseMove->AddMapChip(t_path);
+	}
 };

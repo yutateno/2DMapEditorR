@@ -1,5 +1,5 @@
 #pragma once
-
+#include <vector>
 
 
 // シーンの動き
@@ -30,5 +30,8 @@ public:
 
 	// プロセス
 	virtual void Process() = 0;
+
+	// マップチップの追加
+	virtual void AddMapChip(char t_path[]) = 0;
 };
 

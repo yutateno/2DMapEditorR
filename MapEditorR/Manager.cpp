@@ -11,14 +11,14 @@ void Manager::SceneChange()
 		// タイトル
 	case ESceneNumber::TITLE:
 		POINTER_RELEASE(p_baseMove);
-		p_baseMove = new Title();
+		p_baseMove = new Title(v_mapChip);
 		break;
 
 
 		// マップエディター
 	case ESceneNumber::MAPEDITOR:
 		POINTER_RELEASE(p_baseMove);
-		p_baseMove = new MapEditor();
+		p_baseMove = new MapEditor(v_mapChip);
 
 
 	default:
@@ -36,9 +36,13 @@ Manager::Manager()
 	BASICPARAM::e_nowScene = ESceneNumber::TITLE;
 
 
+	// 画像ファイル
+	v_mapChip.clear();
+
+
 	// メモリの初期化
 	p_baseMove = nullptr;
-	p_baseMove = new Title();
+	p_baseMove = new Title(v_mapChip);
 }
 
 
@@ -47,6 +51,17 @@ Manager::Manager()
 Manager::~Manager()
 {
 	POINTER_RELEASE(p_baseMove);
+
+
+	if (v_mapChip.size() != 0)
+	{
+		for (size_t i = 0, n = v_mapChip.size(); i != n; ++i)
+		{
+			GRAPHIC_RELEASE(v_mapChip[i]);
+		}
+		v_mapChip.shrink_to_fit();
+		v_mapChip.clear();
+	}
 }
 
 
