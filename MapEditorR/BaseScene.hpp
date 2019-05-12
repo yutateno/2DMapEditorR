@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 
 
 // シーンの動き
@@ -32,6 +33,6 @@ public:
 	virtual void Process() = 0;
 
 	// マップチップの追加
-	virtual void AddMapChip(char t_path[]) = 0;
+	virtual void AddDragAndDrop(char t_path[]) = 0;
 };
 

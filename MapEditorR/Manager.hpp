@@ -1,6 +1,5 @@
 #pragma once
 #include "BaseScene.hpp"
-#include <vector>
 
 #include "Title.hpp"
 #include "MapEditor.hpp"
@@ -25,6 +24,9 @@ private:
 	// マップチップ素材
 	std::vector<int> v_mapChip;
 
+	// 書き込むファイル
+	std::string filePath;
+
 
 public:
 	// コンストラクタ
@@ -39,8 +41,8 @@ public:
 
 
 	// 素材受け取り
-	void GetAddMapChipPath(char t_path[])
+	void GetAddDragAndDrop(char t_path[])
 	{
-		p_baseMove->AddMapChip(t_path);
+		p_baseMove->AddDragAndDrop(t_path);
 	}
 };

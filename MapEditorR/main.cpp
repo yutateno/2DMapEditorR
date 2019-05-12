@@ -35,11 +35,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		{
 			char filePath[MAX_PATH];
 
-			// ドラッグ＆ドロップされたファイルのパスを取得する
 			GetDragFilePath(filePath);
 
-			// ドラッグ＆ドロップされたファイルを画像として読み込む
-			manager.GetAddMapChipPath(filePath);
+			manager.GetAddDragAndDrop(filePath);
 		}
 	}
 

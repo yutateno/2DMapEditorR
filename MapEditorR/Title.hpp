@@ -5,6 +5,13 @@
 
 
 
+// シーン
+enum class STEPNUMBER
+{
+	chip, file, fileExc, nextScene
+};
+
+
 /*
 タイトル
 */
@@ -12,19 +19,23 @@ class Title : public BaseScene
 {
 private:
 	// マップチップ素材
-	std::vector<int> *vp_mapChip;
+	std::vector<int>* vp_mapChip;
+
+	// ステップ項数
+	STEPNUMBER stepNowNum;
+
+	// 書き込むファイルのパス
+	std::string* p_filePath;
+
 
 public:
-	Title(std::vector<int> &t_mapChip);
+	Title(std::vector<int>& t_mapChip, std::string& t_filePath);
 	~Title();
 
 
 	void Draw() override;
 	void Process() override;
 
-	void AddMapChip(char t_path[]) override
-	{
-		vp_mapChip->push_back(LoadGraph(t_path));
-	}
+	void AddDragAndDrop(char t_path[]) override;
 };
 
