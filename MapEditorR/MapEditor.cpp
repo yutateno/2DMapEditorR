@@ -9,7 +9,6 @@ void MapEditor::LoadMap()
 
 	std::ifstream readFile(p_filePath->c_str());
 
-
 	std::string readLine = "";
 
 	readFileCSV = (p_filePath->find(".csv") != -1);
@@ -20,44 +19,87 @@ void MapEditor::LoadMap()
 		endFlag = true;
 		return;
 	}
+
+	if (readFileCSV)
+	{
+		while (getline(readFile, readLine))
+		{
+			std::string token;
+			std::istringstream stream(readLine);
+			int tempReadCount = readCount + 1;
+			vv_mapdata.resize(tempReadCount);
+
+			while (std::getline(stream, token, ','))
+			{
+				vv_mapdata[readCount].push_back(token);
+			}
+			readCount++;
+		}
+	}
 	else
 	{
-		if (readFileCSV)
+		while (std::getline(readFile, readLine))
 		{
-			while (getline(readFile, readLine))
+			int tempReadCount = readCount + 1;
+			vv_mapdata.resize(tempReadCount);
+
+			for (int i = 0, n = static_cast<int>(readLine.length()); i < n; ++i)
 			{
-				std::string token;
-				std::istringstream stream(readLine);
-				int tempReadCount = readCount + 1;
-				vv_mapdata.resize(tempReadCount);
-
-				while (std::getline(stream, token, ','))
-				{
-					vv_mapdata[readCount].push_back(token);
-				}
-				readCount++;
+				vv_mapdata[readCount].push_back(readLine.substr(i, 1));
 			}
-		}
-		else
-		{
-			while (std::getline(readFile, readLine))
-			{
-				int tempReadCount = readCount + 1;
-				vv_mapdata.resize(tempReadCount);
 
-				for (int i = 0, n = static_cast<int>(readLine.length()); i < n; ++i)
-				{
-					vv_mapdata[readCount].push_back(readLine.substr(i, 1));
-				}
-
-				readCount++;
-			}
+			readCount++;
 		}
 	}
 
 
 	// ファイルを閉じる
 	readFile.close();
+}
+
+
+
+/// ---------------------------------------------------------------------------------------------------------------------------------------------------------
+void MapEditor::SaveMap()
+{
+	std::ofstream saveFile(p_filePath->c_str());
+
+	// ファイル読み込み失敗
+	if (saveFile.fail())
+	{
+		endFlag = true;
+		return;
+	}
+
+	if (readFileCSV)
+	{
+		for (int i = 0, n = static_cast<int>(vv_mapdata.size()); i != n; ++i)
+		{
+			for (int j = 0, m = static_cast<int>(vv_mapdata[i].size()); j != m; ++j)
+			{
+				saveFile << vv_mapdata[i][j];
+				if (m != j + 1)
+				{
+					saveFile << ",";
+				}
+			}
+			saveFile << std::endl;
+		}
+	}
+	else
+	{
+		for (int i = 0, n = static_cast<int>(vv_mapdata.size()); i != n; ++i)
+		{
+			for (int j = 0, m = static_cast<int>(vv_mapdata[i].size()); j != m; ++j)
+			{
+				saveFile << vv_mapdata[i][j];
+			}
+			saveFile << std::endl;
+		}
+	}
+
+	// ファイルを閉じる
+	saveFile.close();
 }
 
 
@@ -122,6 +164,12 @@ void MapEditor::Draw()
 void MapEditor::Process()
 {
 	GetMousePoint(&mouseX, &mouseY);
+
+
+	if (MouseData::GetClick(0) == 1)
+	{
+		SaveMap();
+	}
 
 
 	if (KeyData::Get(KEY_INPUT_1) == 1) BASICPARAM::e_nowScene = ESceneNumber::TITLE;

@@ -31,6 +31,9 @@ private:
 	// ファイル読み込む
 	void LoadMap();
 
+	// ファイル書き込む
+	void SaveMap();
+
 	// マウスの位置
 	int mouseX, mouseY;
 
