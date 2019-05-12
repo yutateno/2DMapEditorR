@@ -8,31 +8,34 @@ int KeyData::key[256];
 char KeyData::tmpKey[256];
 
 
+/// ------------------------------------------------------------------------------------------------------------
 void KeyData::UpDate()
 {
 	GetHitKeyStateAll(KeyData::tmpKey);	// 全てのキーの入力状態を得る
+
 	for (int i = 0; i < 256; i++)
 	{
 		// i番のキーコードに対応するキーが押されていたら
 		if (KeyData::tmpKey[i] != 0)
 		{
-			KeyData::key[i]++;   // 加算
+			KeyData::key[i]++;
 		}
 		// キーが離された瞬間
 		else if (KeyData::key[i] > 0)
 		{
-			KeyData::key[i] = -1; // -1にする
+			KeyData::key[i] = -1;
 		}
-		// それ以外
+		// アクションがない
 		else
 		{
-			KeyData::key[i] = 0; // 0にする
+			KeyData::key[i] = 0;
 		}
 	}
 }
 
 
 
+/// ------------------------------------------------------------------------------------------------------------
 bool KeyData::CheckEnd()
 {
 	return KeyData::key[KEY_INPUT_ESCAPE] <= 0;
@@ -40,72 +43,84 @@ bool KeyData::CheckEnd()
 
 
 
-int KeyData::Get(int KeyCode)
+/// ------------------------------------------------------------------------------------------------------------
+int KeyData::Get(int t_keyCode)
 {
-	return KeyData::key[KeyCode];
+	return KeyData::key[t_keyCode];
 }
 
 
 
 //////////////////////////////////////////////マウス関連////////////////////////////////////////////////////
 
-int MouseData::m_Mouse[3];
-int MouseData::MouseInput;
+int MouseData::mouse[3];
+int MouseData::mouseInput;
 
 
 
-void MouseData::Mouse_UpDate()
+/// ------------------------------------------------------------------------------------------------------------
+void MouseData::UpDate()
 {
-	MouseInput = GetMouseInput();    //マウスの押した状態取得
+	mouseInput = GetMouseInput();		//マウスの押した状態取得
+
 	for (int i = 0; i < 3; i++)
 	{
-		if ((MouseInput & 1 << i) != 0)
+		//押されていたら
+		if ((mouseInput & 1 << i) != 0)
 		{
-			m_Mouse[i]++;   //押されていたらカウントアップ
+			mouse[i]++;
 		}
+		//押されてなかったら
 		else
 		{
-			m_Mouse[i] = 0; //押されてなかったら0
+			mouse[i] = 0;
 		}
 	}
 }
 
 
 
-int MouseData::GetClick(int MouseCode)
+/// ------------------------------------------------------------------------------------------------------------
+int MouseData::GetClick(int t_mouseCode)
 {
-	return m_Mouse[MouseCode];
+	return mouse[t_mouseCode];
 }
 
 
 
 //////////////////////////////////////////////マウスホイール関連////////////////////////////////////////////////////
 
-int MouseWheelData::m_MouseWheel;
-int MouseWheelData::old_MouseWheel;
+int MouseWheelData::mouseWheel;
+int MouseWheelData::oldMouseWheel;
 
 
 
-void MouseWheelData::MouseWheel_Update()
+/// ------------------------------------------------------------------------------------------------------------
+void MouseWheelData::Update()
 {
-	old_MouseWheel = m_MouseWheel;
-	if (old_MouseWheel - m_MouseWheel > 0)
+	oldMouseWheel = mouseWheel;
+
+	// 上にホイールが動いたら
+	if (oldMouseWheel - mouseWheel > 0)
 	{
-		m_MouseWheel++;
+		mouseWheel++;
 	}
-	else if (old_MouseWheel - m_MouseWheel < 0)
+	// 下にホイールが動いたら
+	else if (oldMouseWheel - mouseWheel < 0)
 	{
-		m_MouseWheel--;
+		mouseWheel--;
 	}
+	// 何もしていないとき
 	else 
 	{
-		m_MouseWheel = 0;
+		mouseWheel = 0;
 	}
 }
 
 
 
-int MouseWheelData::GetMouseWheel(int MouseWheelCode) 
+/// ------------------------------------------------------------------------------------------------------------
+int MouseWheelData::GetMouseWheel(int t_mouseWheelCode)
 {
-	return m_MouseWheel += MouseWheelCode;
+	return mouseWheel += t_mouseWheelCode;
 }

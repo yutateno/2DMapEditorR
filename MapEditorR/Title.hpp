@@ -7,7 +7,7 @@
 
 
 
-// シーン
+// タイトルでのシーン
 enum class STEPNUMBER
 {
 	chip, file, fileExc, nextScene
@@ -20,27 +20,39 @@ enum class STEPNUMBER
 class Title : public BaseScene
 {
 private:
-	// マップチップ素材
-	std::vector<int>* vp_mapChip;
+	/// タイトルに関する---------------------------------------------------
 
 	// ステップ項数
 	STEPNUMBER stepNowNum;
 
+
+	/// マップエディタに関する---------------------------------------------
+
+	// マップチップ素材
+	std::vector<int>* vp_mapChip;
+
 	// 書き込むファイルのパス
 	std::string* p_filePath;
 
-	// 適当なファイルを作成したときの仮マップ
+	// 仮マップの作成
 	void CreateMap(const bool t_fileCSV);
 
 
 public:
+	// コンストラクタ(マップチップ素材と書き込みファイルのパスを受け取る
 	Title(std::vector<int>& t_mapChip, std::string& t_filePath);
-	~Title();
+
+	// デストラクタ
+	~Title() {}
 
 
+	// 描画
 	void Draw() override;
+
+	// プロセス
 	void Process() override;
 
+	// ドラッグアンドドロップからマップチップ素材の追加
 	void AddDragAndDrop(char t_path[]) override;
 };
 

@@ -13,13 +13,26 @@
 class MapEditor : public BaseScene
 {
 private:
+	/// マップチップ素材に関する----------------------------------
 	// マップチップ素材
 	std::vector<int> *vp_mapChip;
+
+	// マップチップ選択画面の表示
+	bool selectMapChipWindow;
+
+	// マップチップのサイズを調べる
+	int mapChipSizeX, mapChipSizeY;
+
+	// マップチップの一つを描画する
+	void MapChipDraw(const int t_areaX, const int t_areaY, const int t_chipID);
+
+
+	/// ファイルに関する------------------------------------------
 
 	// 書き込むファイルパス
 	std::string* p_filePath;
 
-	// IDは二桁かどうか
+	// マップチップIDは二桁かどうか
 	bool chipDoubleDigitID;
 
 	// .csvかどうか
@@ -34,26 +47,28 @@ private:
 	// ファイル書き込む
 	void SaveMap();
 
+
+	/// マウスに関する-------------------------------------------
+
 	// マウスの位置
 	int mouseX, mouseY;
 
-	// マップチップ選択画面の表示
-	bool selectMapChipWindow;
-
-	// マップチップのサイズを調べる
-	int mapChipSizeX, mapChipSizeY;
-
-	// マップチップの一つを描画する
-	void MapChipDraw(const int t_areaX, const int t_areaY, const int t_chipID);
-
 
 public:
+	// コンストラクタ(マップチップ素材とファイルパスを受けとる
 	MapEditor(std::vector<int>& t_mapChip, std::string& t_filePath);
+
+	// デストラクタ
 	~MapEditor();
 
 
+	// 描画
 	void Draw() override;
+
+	// プロセス
 	void Process() override;
+
+	// ドラッグアンドドロップによる追加
 	void AddDragAndDrop(char t_path[]) override {}
 };
 
