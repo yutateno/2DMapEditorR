@@ -169,7 +169,16 @@ void MapEditor::DeleteChip()
 /// ---------------------------------------------------------------------------------------------------------------------------------------------------------
 void MapEditor::SettingChip()
 {
-	vv_mapdata[chipSelectAreaY][chipSelectAreaX] = std::to_string(mouseSelectChipID);
+	if (chipDoubleDigitID)
+	{
+		std::string strTemp = "0";
+		strTemp = mouseSelectChipID / 10 == 0 ? strTemp + std::to_string(mouseSelectChipID) : std::to_string(mouseSelectChipID);
+		vv_mapdata[chipSelectAreaY][chipSelectAreaX] = strTemp;
+	}
+	else
+	{
+		vv_mapdata[chipSelectAreaY][chipSelectAreaX] = std::to_string(mouseSelectChipID);
+	}
 }
 
 
@@ -380,6 +389,10 @@ MapEditor::MapEditor(std::vector<int>& t_mapChip, std::string& t_filePath, int& 
 
 	// 選択しているマップチップIDの初期化
 	mouseSelectChipID = 0;
+
+	// マップの左上の位置
+	windowLeftUpX = 0;
+	windowLeftUpY = 0;
 }
 
 
@@ -400,7 +413,7 @@ void MapEditor::Draw()
 	// 背景画像を描画する
 	if (*p_backGround != -1)
 	{
-		DrawGraph(0, 0, *p_backGround, false);
+		DrawGraph(windowLeftUpX, windowLeftUpY, *p_backGround, false);
 	}
 
 
@@ -409,9 +422,14 @@ void MapEditor::Draw()
 	{
 		for (int j = 0, m = static_cast<int>(vv_mapdata[i].size()); j != m; ++j)
 		{
-			MapChipDraw(j * mapChipSizeX, i * mapChipSizeX, stoi(vv_mapdata[i][j]));
+			MapChipDraw(windowLeftUpX + (j * mapChipSizeX), windowLeftUpY + (i * mapChipSizeY), stoi(vv_mapdata[i][j]));
 		}
 	}
+
+
+	// マップの大きさを分かりやすくする
+	DrawBox(windowLeftUpX, windowLeftUpY, windowLeftUpX + (static_cast<int>(vv_mapdata[0].size()) * mapChipSizeX)
+		, windowLeftUpY + (static_cast<int>(vv_mapdata.size()) * mapChipSizeY), GetColor(255, 0, 255), false);
 
 
 	// マップチップ選択画面の描画をするとき
@@ -422,29 +440,29 @@ void MapEditor::Draw()
 
 
 		// マウスが選択画面外でマップ範囲内だったら
-		if (mouseX < static_cast<int>(vv_mapdata[0].size() * mapChipSizeX) && mouseY < static_cast<int>(vv_mapdata.size() * mapChipSizeY)
+		if (mouseX < windowLeftUpX + static_cast<int>(vv_mapdata[0].size() * mapChipSizeX)
+			&& mouseY < windowLeftUpY + static_cast<int>(vv_mapdata.size() * mapChipSizeY)
 			&& mouseX > 320)
 		{
 			// マウスからマップ選択の位置をわかりやすく
-			DrawBox(chipSelectAreaX * mapChipSizeX, chipSelectAreaY * mapChipSizeY
-				, (chipSelectAreaX + 1) * mapChipSizeX, (chipSelectAreaY + 1) * mapChipSizeY, GetColor(200, 200, 0), false);
+			DrawBox(windowLeftUpX + (chipSelectAreaX * mapChipSizeX), windowLeftUpY + (chipSelectAreaY * mapChipSizeY)
+				, windowLeftUpX + ((chipSelectAreaX + 1) * mapChipSizeX), windowLeftUpY + ((chipSelectAreaY + 1) * mapChipSizeY), GetColor(200, 200, 0), false);
 		}
 	}
 	// マップチップ選択画面じゃないとき
 	else
 	{
 		// マップ範囲内だったら
-		if (mouseX < static_cast<int>(vv_mapdata[0].size() * mapChipSizeX) && mouseY < static_cast<int>(vv_mapdata.size() * mapChipSizeY))
+		if (mouseX < windowLeftUpX + static_cast<int>(vv_mapdata[0].size() * mapChipSizeX)
+			&& mouseY < windowLeftUpY + static_cast<int>(vv_mapdata.size() * mapChipSizeY)
+			&& mouseX > windowLeftUpX
+			&& mouseY > windowLeftUpY)
 		{
 			// マウスからマップ選択の位置をわかりやすく
-			DrawBox(chipSelectAreaX * mapChipSizeX, chipSelectAreaY * mapChipSizeY
-				, (chipSelectAreaX + 1) * mapChipSizeX, (chipSelectAreaY + 1) * mapChipSizeY, GetColor(200, 200, 0), false);
+			DrawBox(windowLeftUpX + (chipSelectAreaX * mapChipSizeX), windowLeftUpY + (chipSelectAreaY * mapChipSizeY)
+				, windowLeftUpX + ((chipSelectAreaX + 1) * mapChipSizeX), windowLeftUpY + ((chipSelectAreaY + 1) * mapChipSizeY), GetColor(200, 200, 0), false);
 		}
 	}
-
-
-	// マップの大きさを分かりやすくする
-	DrawBox(0, 0, (static_cast<int>(vv_mapdata[0].size())* mapChipSizeX), (static_cast<int>(vv_mapdata.size())* mapChipSizeY), GetColor(255, 0, 255), false);
 
 
 	// 選択しているマップチップIDが0番目じゃなかったら
@@ -482,8 +500,8 @@ void MapEditor::Process()
 	
 	
 	//マウスのあるチップの座標を取得
-	chipSelectAreaX = static_cast<int>(mouseX / mapChipSizeX);
-	chipSelectAreaY = static_cast<int>(mouseY / mapChipSizeY);
+	chipSelectAreaX = (static_cast<int>((mouseX - windowLeftUpX) / mapChipSizeX));
+	chipSelectAreaY = (static_cast<int>((mouseY - windowLeftUpY) / mapChipSizeY));
 
 
 	// マウスホイールがクリックされたら
@@ -524,7 +542,10 @@ void MapEditor::Process()
 	else
 	{
 		// マップの範囲内だったら
-		if (mouseX < static_cast<int>(vv_mapdata[0].size() * mapChipSizeX) && mouseY < static_cast<int>(vv_mapdata.size() * mapChipSizeY))
+		if (mouseX < windowLeftUpX + (static_cast<int>(vv_mapdata[0].size() * mapChipSizeX))
+			&& mouseY < windowLeftUpY + (static_cast<int>(vv_mapdata.size() * mapChipSizeY))
+			&& mouseX > windowLeftUpX
+			&& mouseY > windowLeftUpY)
 		{
 			// 右クリックだったら
 			if (MouseData::GetClick(1) >= 1)
@@ -538,6 +559,34 @@ void MapEditor::Process()
 			{
 				SettingChip();
 			}
+		}
+
+
+		// 上ボタンが押されたら
+		if (KeyData::Get(KEY_INPUT_UP) == 1)
+		{
+			windowLeftUpY -= mapChipSizeY;
+		}
+
+
+		// 右ボタンが押されたら
+		if (KeyData::Get(KEY_INPUT_RIGHT) == 1)
+		{
+			windowLeftUpX += mapChipSizeX;
+		}
+
+
+		// 下ボタンが押されたら
+		if (KeyData::Get(KEY_INPUT_DOWN) == 1)
+		{
+			windowLeftUpY += mapChipSizeY;
+		}
+
+
+		// 左ボタンが押されたら
+		if (KeyData::Get(KEY_INPUT_LEFT) == 1)
+		{
+			windowLeftUpX -= mapChipSizeX;
 		}
 	}
 }
