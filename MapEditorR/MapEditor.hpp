@@ -80,8 +80,26 @@ private:
 	// マウスの位置
 	int mouseX, mouseY;
 
+	// マップチップ上の位置
+	int chipSelectAreaX, chipSelectAreaY;
+
 	// 選択しているマップチップID
 	int mouseSelectChipID;
+
+	// 指定のマップチップIDを削除
+	void DeleteChip();
+
+	// 指定のマップチップIDを設定
+	void SettingChip();
+
+
+	/// 内部関数に関する----------------------------------------
+	
+	// マップチップの選択画面描画
+	void MapChipSelectDraw();
+
+	// マップチップの選択画面プロセス
+	void MapChipSelectProcess();
 
 
 public:
