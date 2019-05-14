@@ -275,23 +275,26 @@ void MapEditor::Draw()
 
 		// 二列目以降について
 		{
-			// 二行目以降の時
-			int i = 0;
+			int i = 0;		// 何行目か調べる
+
 			for (EChipSelectAreaY areaY : {EChipSelectAreaY::secondFirst, EChipSelectAreaY::thirdFirst, EChipSelectAreaY::fourthFirst
 				, EChipSelectAreaY::fifthFirst, EChipSelectAreaY::sixthFirst, EChipSelectAreaY::seventhFirst, EChipSelectAreaY::eighthFirst
 				, EChipSelectAreaY::ninthFirst, EChipSelectAreaY::tenthFirst})
 			{
-				int tempI = static_cast<int>(areaY);
-				int j = 0;
+				int j = 0;		// 何列目か調べる
+
 				for (EChipSelectAreaX areaX : {EChipSelectAreaX::oneFirst, EChipSelectAreaX::secondFirst, EChipSelectAreaX::thirdFirst
 					, EChipSelectAreaX::fourthFirst, EChipSelectAreaX::fifthFirst})
 				{
-					int tempJ = static_cast<int>(areaX);
-					MapChipDraw(tempJ, tempI, (j + (i * 5)));
-					DrawFormatString(tempJ, tempI, GetColor(255, 255, 255), "%d", j + (i * 5));
-					j++;
+					// マップチップを描画
+					MapChipDraw(static_cast<int>(areaX), static_cast<int>(areaY), (j + (i * 5)));
+
+					// マップチップIDを表示
+					DrawFormatString(static_cast<int>(areaX), static_cast<int>(areaY), GetColor(255, 255, 255), "%d", j + (i * 5));
+
+					j++;		// 列加算
 				}
-				i++;
+				i++;		// 行加算
 			}
 		}
 	}
@@ -311,9 +314,10 @@ void MapEditor::Draw()
 	}
 
 
-	// マウスで選択しているチップを表示
+	// 選択しているマップチップIDが0番目じゃなかったら
 	if (mouseSelectChipID != 0)
 	{
+		// マウスで選択しているチップを表示
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 125);
 		MapChipDraw(mouseX, mouseY, mouseSelectChipID);
 		DrawFormatString(mouseX + mapChipSizeX - 10, mouseY, GetColor(255, 255, 255), "%d", mouseSelectChipID);
@@ -370,7 +374,10 @@ void MapEditor::Process()
 				// 「右一列を追加する」を選択
 				if (mouseX > static_cast<int>(EChipSelectAreaX::oneFirst) && mouseX < static_cast<int>(EChipSelectAreaX::oneEnd))
 				{
+					// 一桁かどうかで追加するIDを選択
 					std::string str = chipDoubleDigitID ? "01" : "1";
+
+					// 右端に一列追加
 					for (size_t i = 0, n = vv_mapdata.size(); i != n; ++i) 
 					{
 						vv_mapdata[i].push_back(str);
@@ -381,6 +388,7 @@ void MapEditor::Process()
 				// 「下一行を追加する」を選択
 				if (mouseX > static_cast<int>(EChipSelectAreaX::secondFirst) && mouseX < static_cast<int>(EChipSelectAreaX::secondEnd))
 				{
+					// 下端に一行追加
 					vv_mapdata.push_back(vv_mapdata.back());
 				}
 
@@ -388,8 +396,10 @@ void MapEditor::Process()
 				// 「右一列を削除する」を選択
 				if (mouseX > static_cast<int>(EChipSelectAreaX::thirdFirst) && mouseX < static_cast<int>(EChipSelectAreaX::thirdEnd))
 				{
+					// 全て消さないようにする
 					if (vv_mapdata[0].size() >= 2)
 					{
+						// 右端一列を削除
 						for (size_t i = 0, n = vv_mapdata.size(); i != n; ++i)
 						{
 							vv_mapdata[i].pop_back();
@@ -401,35 +411,44 @@ void MapEditor::Process()
 				// 「下一行を削除する」を選択
 				if (mouseX > static_cast<int>(EChipSelectAreaX::fourthFirst) && mouseX < static_cast<int>(EChipSelectAreaX::fourthEnd))
 				{
+					// 全て消さないようにする
 					if (vv_mapdata.size() >= 2)
 					{
+						// 下端一列を削除
 						vv_mapdata.pop_back();
 					}
 				}
-			} /// // 一行目の時
+			} /// if (mouseY > static_cast<int>(EChipSelectAreaY::oneFirst) && mouseY < static_cast<int>(EChipSelectAreaY::oneEnd))
+
+
 			// 二行目以降の時
-			int i = 0;
-			for (EChipSelectAreaY areaY : {EChipSelectAreaY::secondFirst, EChipSelectAreaY::thirdFirst, EChipSelectAreaY::fourthFirst
-				, EChipSelectAreaY::fifthFirst, EChipSelectAreaY::sixthFirst, EChipSelectAreaY::seventhFirst, EChipSelectAreaY::eighthFirst
-				, EChipSelectAreaY::ninthFirst, EChipSelectAreaY::tenthFirst})
 			{
-				int tempI = static_cast<int>(areaY);
-				int j = 0;
-				if (mouseY > tempI && mouseY < tempI + 40)
+				int i = 0;		// 何行目か
+
+				for (EChipSelectAreaY areaY : {EChipSelectAreaY::secondFirst, EChipSelectAreaY::thirdFirst, EChipSelectAreaY::fourthFirst
+					, EChipSelectAreaY::fifthFirst, EChipSelectAreaY::sixthFirst, EChipSelectAreaY::seventhFirst, EChipSelectAreaY::eighthFirst
+					, EChipSelectAreaY::ninthFirst, EChipSelectAreaY::tenthFirst})
 				{
-					// チップを選択
-					for (EChipSelectAreaX areaX : {EChipSelectAreaX::oneFirst, EChipSelectAreaX::secondFirst, EChipSelectAreaX::thirdFirst
-						, EChipSelectAreaX::fourthFirst, EChipSelectAreaX::fifthFirst})
+					int j = 0;		// 何列目か
+
+					// Y座標にてマウスが入っていたら
+					if (mouseY > static_cast<int>(areaY) && mouseY < static_cast<int>(areaY) + 40)
 					{
-						int tempJ = static_cast<int>(areaX);
-						if (mouseX > tempJ && mouseX < tempJ + 40)
+						// チップを選択
+						for (EChipSelectAreaX areaX : {EChipSelectAreaX::oneFirst, EChipSelectAreaX::secondFirst, EChipSelectAreaX::thirdFirst
+							, EChipSelectAreaX::fourthFirst, EChipSelectAreaX::fifthFirst})
 						{
-							mouseSelectChipID = (j + (i * 5));
+							// X座標にてマウスが入っていたら
+							if (mouseX > static_cast<int>(areaX) && mouseX < static_cast<int>(areaX) + 40)
+							{
+								// マウス選択マップチップIDを渡す
+								mouseSelectChipID = (j + (i * 5));
+							}
+							j++;		// 列加算
 						}
-						j++;
 					}
+					i++;		// 行加算
 				}
-				i++;
 			}
 		} /// if (MouseData::GetClick(0) == 1)
 	}
