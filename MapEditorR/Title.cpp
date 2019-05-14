@@ -32,7 +32,7 @@ void Title::CreateMap(const bool t_fileCSV)
 
 
 /// ---------------------------------------------------------------------------------------------------------------------------------------------------------
-Title::Title(std::vector<int>& t_mapChip, std::string& t_filePath)
+Title::Title(std::vector<int>& t_mapChip, std::string& t_filePath, int& t_backGround)
 {
 	// 強制終了フラッグを下す
 	endFlag = false;
@@ -41,10 +41,13 @@ Title::Title(std::vector<int>& t_mapChip, std::string& t_filePath)
 	vp_mapChip = &t_mapChip;
 
 	// 現在のシーンを初期化する
-	stepNowNum = STEPNUMBER::chip;
+	stepNowNum = STEPNUMBER::backGround;
 
 	// ファイルのパスを共有する
 	p_filePath = &t_filePath;
+
+	// 背景画像を共有する
+	p_backGround = &t_backGround;
 }
 
 
@@ -52,16 +55,29 @@ Title::Title(std::vector<int>& t_mapChip, std::string& t_filePath)
 /// ---------------------------------------------------------------------------------------------------------------------------------------------------------
 void Title::Draw()
 {
+	// 背景画像を描画する
+	if (*p_backGround != -1)
+	{
+		DrawGraph(0, 420, *p_backGround, false);
+	}
+
 	// マップチップ素材を横並びに描画する
 	for (int i = 0, n = static_cast<int>(vp_mapChip->size()); i != n; ++i)
 	{
-		DrawGraph(i * 15, 0, vp_mapChip->at(i), true);
+		DrawGraph(i * 15, 300, vp_mapChip->at(i), true);
 	}
 
 
 	// シーンで描画する内容を変更する
 	switch (stepNowNum)
 	{
+	// 背景画面を追加してもらう
+	case STEPNUMBER::backGround:
+
+		DrawFormatString(0, 0, GetColor(255, 255, 255), "背景素材をドラッグアンドドロップしてください。\n無い場合はホイールクリックしてください。");
+		DrawFormatString(0, 0, GetColor(0, 0, 255), "\n　　　　　ホイールクリック");
+
+		break;
 
 	// マップチップ素材を追加してもらう
 	case STEPNUMBER::chip:
@@ -70,9 +86,9 @@ void Title::Draw()
 		if (vp_mapChip->size() != 0)
 		{
 			// 説明を表示する
-			DrawFormatString(0, 240, GetColor(255, 255, 255), "全部の素材を入れたら画面内でホイールクリックしてください。\nやり直す場合は右クリック");
-			DrawFormatString(0, 240, GetColor(0, 0, 255), "　　　　　　　　　　　　　　ホイールクリック");
-			DrawFormatString(0, 240, GetColor(0, 255, 0), "\n　　　　　　　右クリック");
+			DrawFormatString(0, 0, GetColor(255, 255, 255), "全部の素材を入れたら画面内でホイールクリックしてください。\nやり直す場合は右クリック");
+			DrawFormatString(0, 0, GetColor(0, 0, 255), "　　　　　　　　　　　　　　ホイールクリック");
+			DrawFormatString(0, 0, GetColor(0, 255, 0), "\n　　　　　　　右クリック");
 		}
 
 		// まだマップチップ素材をドラッグアンドドロップしていなかったら
@@ -88,8 +104,8 @@ void Title::Draw()
 	case STEPNUMBER::file:
 
 		// 説明を表示する
-		DrawFormatString(0, 240, GetColor(255, 255, 255), "読み込むファイルがある場合はそれをドラッグアンドドロップしてください。\n無い場合はそのままホイールクリックしてください。");
-		DrawFormatString(0, 240, GetColor(0, 255, 0), "\n　　　　　　　　　ホイールクリック");
+		DrawFormatString(0, 0, GetColor(255, 255, 255), "読み込むファイルがある場合はそれをドラッグアンドドロップしてください。\n無い場合はそのままホイールクリックしてください。");
+		DrawFormatString(0, 0, GetColor(0, 255, 0), "\n　　　　　　　　　ホイールクリック");
 
 		break;
 
@@ -98,9 +114,9 @@ void Title::Draw()
 	case STEPNUMBER::fileExc:
 
 		// 説明を表示する
-		DrawFormatString(0, 240, GetColor(255, 255, 255), "書き込むファイルの形式が.csvならホイールクリックしてください。\n.txtなら右クリック");
-		DrawFormatString(0, 240, GetColor(0, 255, 0), "　　　　　　　　　　　　　　    ホイールクリック");
-		DrawFormatString(0, 240, GetColor(0, 0, 255), "\n　　    右クリック");
+		DrawFormatString(0, 0, GetColor(255, 255, 255), "書き込むファイルの形式が.csvならホイールクリックしてください。\n.txtなら右クリック");
+		DrawFormatString(0, 0, GetColor(0, 255, 0), "　　　　　　　　　　　　　　    ホイールクリック");
+		DrawFormatString(0, 0, GetColor(0, 0, 255), "\n　　    右クリック");
 
 		break;
 
@@ -109,10 +125,10 @@ void Title::Draw()
 	case STEPNUMBER::nextScene:
 
 		// 説明を表示する
-		DrawFormatString(0, 120, GetColor(255, 255, 255), "%s", p_filePath->c_str());
-		DrawFormatString(0, 240, GetColor(255, 255, 255), "マップエディタ画面に進む場合はホイールクリックしてください。\n最初からやり直す場合は起動しなおす。\nファイルからやり直す場合は右クリック。");
-		DrawFormatString(0, 240, GetColor(0, 255, 0), "　　　　　　　　　　　　　　　ホイールクリック");
-		DrawFormatString(0, 240, GetColor(0, 0, 255), "\n\n　　　　　　　　　　　　　右クリック。");
+		DrawFormatString(0, 240, GetColor(255, 255, 255), "%s", p_filePath->c_str());
+		DrawFormatString(0, 0, GetColor(255, 255, 255), "マップエディタ画面に進む場合はホイールクリックしてください。\n最初からやり直す場合は起動しなおす。\nファイルからやり直す場合は右クリック。");
+		DrawFormatString(0, 0, GetColor(0, 255, 0), "　　　　　　　　　　　　　　　ホイールクリック");
+		DrawFormatString(0, 0, GetColor(0, 0, 255), "\n\n　　　　　　　　　　　　　右クリック。");
 
 		break;
 
@@ -129,6 +145,25 @@ void Title::Process()
 	// 各シーンの行動
 	switch (stepNowNum)
 	{
+	// 背景画像を追加してもらう
+	case STEPNUMBER::backGround:
+
+		// 背景画像を追加したら
+		if (*p_backGround != -1)
+		{
+			stepNowNum = STEPNUMBER::chip;
+		}
+		// 背景画像をまだ追加していなかったら
+		else
+		{
+			// マウスホイールがクリックされたら
+			if (MouseData::GetClick(2) == 1)
+			{
+				stepNowNum = STEPNUMBER::chip;
+			}
+		}
+
+		break;
 
 	// マップチップ素材を追加してもらう
 	case STEPNUMBER::chip:
@@ -245,6 +280,13 @@ void Title::AddDragAndDrop(char t_path[])
 	// 現在のシーンでドラッグアンドドロップの処理を変更
 	switch (stepNowNum)
 	{
+	// 背景画像を追加するとき
+	case STEPNUMBER::backGround:
+
+		// 背景画像を読み込む
+		*p_backGround = LoadGraph(t_path);
+
+		break;
 
 	// マップチップ素材の時
 	case STEPNUMBER::chip:

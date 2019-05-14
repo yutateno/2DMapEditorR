@@ -6,14 +6,9 @@
 void MapEditor::MapChipDraw(const int t_areaX, const int t_areaY, const int t_chipID)
 {
 	// マップチップ素材にないID番号の時
-	if (vp_mapChip->size() <= t_chipID)
+	if (vp_mapChip->size() > t_chipID)
 	{
-		DrawBox(t_areaY * mapChipSizeY, t_areaX * mapChipSizeX, (t_areaY + 1) * mapChipSizeY, (t_areaX + 1) * mapChipSizeX, GetColor(50, 50, 50), true);
-	}
-	// マップチップ素材のIDがあるとき
-	else
-	{
-		DrawGraph(t_areaY * mapChipSizeY, t_areaX * mapChipSizeX, vp_mapChip->at(t_chipID), false);
+		DrawGraph(t_areaY * mapChipSizeY, t_areaX * mapChipSizeX, vp_mapChip->at(t_chipID), true);
 	}
 }
 
@@ -145,12 +140,17 @@ void MapEditor::SaveMap()
 
 	// ファイルを閉じる
 	saveFile.close();
+
+
+	// セーブ完了を表示させる
+	saveEndFlag = true;
+	saveEndViewCount = 255;
 }
 
 
 
 /// ---------------------------------------------------------------------------------------------------------------------------------------------------------
-MapEditor::MapEditor(std::vector<int>& t_mapChip, std::string& t_filePath)
+MapEditor::MapEditor(std::vector<int>& t_mapChip, std::string& t_filePath, int& t_backGround)
 {
 	// 強制終了フラッグを下す
 	endFlag = false;
@@ -160,6 +160,9 @@ MapEditor::MapEditor(std::vector<int>& t_mapChip, std::string& t_filePath)
 
 	// ファイルパスを共有する
 	p_filePath = &t_filePath;
+
+	// 背景画像を共有する
+	p_backGround = &t_backGround;
 
 	// マウス座標を初期化
 	mouseX = 0;
@@ -182,6 +185,12 @@ MapEditor::MapEditor(std::vector<int>& t_mapChip, std::string& t_filePath)
 
 	// マップチップ素材の0番目のサイズを取得してマップチップ全部のサイズと仮定する
 	GetGraphSize(vp_mapChip->at(0), &mapChipSizeX, &mapChipSizeY);
+
+	// セーブしているフラッグの初期化
+	saveEndFlag = false;
+
+	// セーブ完了のカウント初期化
+	saveEndViewCount = 0;
 }
 
 
@@ -199,6 +208,13 @@ MapEditor::~MapEditor()
 /// ---------------------------------------------------------------------------------------------------------------------------------------------------------
 void MapEditor::Draw()
 {
+	// 背景画像を描画する
+	//if (*p_backGround != -1)
+	//{
+		DrawGraph(0, 0, *p_backGround, false);
+	//}
+
+
 	// マップデータからマップチップを配置したものを描画する
 	for (int i = 0, n = static_cast<int>(vv_mapdata.size()); i != n; ++i)
 	{
@@ -213,15 +229,24 @@ void MapEditor::Draw()
 	if (selectMapChipWindow)
 	{
 		// 半透明としてマップチップ選択画面を描画する
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 190);
-		DrawBox(0, 0, 640, 480, GetColor(125, 125, 125), true);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 225);
+		DrawBox(0, 0, 320, 720, GetColor(125, 125, 125), true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
 	
 	// 下に説明を表示する
-	DrawBox(0, 480, 640, 520, GetColor(0, 0, 0), true);
-	DrawFormatString(0, 500, GetColor(255, 255, 255), "ホイールクリックでセーブ。左または右Ctrlでマップチップ選択画面");
+	DrawBox(0, 720, 1280, 760, GetColor(0, 0, 0), true);
+	DrawFormatString(0, 730, GetColor(255, 255, 255), "ホイールクリックでセーブ。左または右Ctrlでマップチップ選択画面。現マップサイズ: %d x %d", vv_mapdata[0].size(), vv_mapdata.size());
+
+
+	// セーブの表示
+	if (saveEndFlag)
+	{
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, saveEndViewCount);
+		DrawFormatString(0, 730, GetColor(255, 0, 0), "　　　　　　　　　　　　　　　　　　    　　　　　　　　　　　　　　　　　　　         　セーブしました。");
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
 }
 
 
@@ -238,6 +263,18 @@ void MapEditor::Process()
 	{
 		// マップデータからファイルに書き込む
 		SaveMap();
+	}
+
+
+	// セーブ官僚の表示をしているとき
+	if (saveEndFlag)
+	{
+		// 透過を濃くしていく
+		if ((saveEndViewCount -= 3) <= 0)
+		{
+			// セーブ完了の表示を消す
+			saveEndFlag = false;
+		}
 	}
 
 

@@ -11,14 +11,14 @@ void Manager::SceneChange()
 		// タイトル
 	case ESceneNumber::TITLE:
 		POINTER_RELEASE(p_baseMove);
-		p_baseMove = new Title(v_mapChip, filePath);
+		p_baseMove = new Title(v_mapChip, filePath, m_backGround);
 		break;
 
 
 		// マップエディター
 	case ESceneNumber::MAPEDITOR:
 		POINTER_RELEASE(p_baseMove);
-		p_baseMove = new MapEditor(v_mapChip, filePath);
+		p_baseMove = new MapEditor(v_mapChip, filePath, m_backGround);
 
 
 	default:
@@ -44,9 +44,13 @@ Manager::Manager()
 	filePath = "";
 
 
+	// 背景画像
+	m_backGround = -1;
+
+
 	// メモリの初期化
 	p_baseMove = nullptr;
-	p_baseMove = new Title(v_mapChip, filePath);
+	p_baseMove = new Title(v_mapChip, filePath, m_backGround);
 }
 
 
@@ -68,6 +72,10 @@ Manager::~Manager()
 		v_mapChip.shrink_to_fit();
 		v_mapChip.clear();
 	}
+
+
+	// 背景画像の削除
+	GRAPHIC_RELEASE(m_backGround);
 }
 
 
@@ -95,4 +103,7 @@ void Manager::Update()
 		// 直前のシーンと現在のシーンを同じにする
 		BASICPARAM::e_preScene = BASICPARAM::e_nowScene;
 	}
+
+
+	printfDx("%d\n", m_backGround);
 }

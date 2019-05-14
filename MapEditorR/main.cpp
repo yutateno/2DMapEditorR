@@ -15,10 +15,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	SetOutApplicationLogValidFlag(FALSE);
 #endif
 
-
 	SetWindowText("MapEditorR");		// window名の変更
 	ChangeWindowMode(TRUE);				// ウィンドウモードに変更
-	SetGraphMode(640, 520, 32);			// ウィンドウサイズの変更
+
+
+	SetGraphMode(1280, 760, 32);			// 画面サイズ設定
 
 	// DxLibの初期化
 	if (DxLib_Init() == -1)

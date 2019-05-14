@@ -29,6 +29,9 @@ private:
 	// 書き込むファイル
 	std::string filePath;
 
+	// 背景素材
+	int m_backGround;
+
 
 public:
 	// コンストラクタ

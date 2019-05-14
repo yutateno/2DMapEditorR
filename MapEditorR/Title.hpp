@@ -10,7 +10,7 @@
 // タイトルでのシーン
 enum class STEPNUMBER
 {
-	chip, file, fileExc, nextScene
+	backGround, chip, file, fileExc, nextScene
 };
 
 
@@ -37,10 +37,13 @@ private:
 	// 仮マップの作成
 	void CreateMap(const bool t_fileCSV);
 
+	// 背景画像
+	int* p_backGround;
+
 
 public:
 	// コンストラクタ(マップチップ素材と書き込みファイルのパスを受け取る
-	Title(std::vector<int>& t_mapChip, std::string& t_filePath);
+	Title(std::vector<int>& t_mapChip, std::string& t_filePath, int& t_backGround);
 
 	// デストラクタ
 	~Title() {}

@@ -14,8 +14,9 @@ class MapEditor : public BaseScene
 {
 private:
 	/// マップチップ素材に関する----------------------------------
+
 	// マップチップ素材
-	std::vector<int> *vp_mapChip;
+	std::vector<int>* vp_mapChip;
 
 	// マップチップ選択画面の表示
 	bool selectMapChipWindow;
@@ -25,6 +26,9 @@ private:
 
 	// マップチップの一つを描画する
 	void MapChipDraw(const int t_areaX, const int t_areaY, const int t_chipID);
+
+	// 背景画像
+	int* p_backGround;
 
 
 	/// ファイルに関する------------------------------------------
@@ -47,6 +51,12 @@ private:
 	// ファイル書き込む
 	void SaveMap();
 
+	// セーブをしたかどうか
+	bool saveEndFlag;
+
+	// セーブ完了の表示カウント
+	int saveEndViewCount;
+
 
 	/// マウスに関する-------------------------------------------
 
@@ -56,7 +66,7 @@ private:
 
 public:
 	// コンストラクタ(マップチップ素材とファイルパスを受けとる
-	MapEditor(std::vector<int>& t_mapChip, std::string& t_filePath);
+	MapEditor(std::vector<int>& t_mapChip, std::string& t_filePath, int& t_backGround);
 
 	// デストラクタ
 	~MapEditor();
