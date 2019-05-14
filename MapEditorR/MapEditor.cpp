@@ -232,6 +232,10 @@ void MapEditor::MapChipSelectDraw()
 			for (EChipSelectAreaX areaX : {EChipSelectAreaX::oneFirst, EChipSelectAreaX::secondFirst, EChipSelectAreaX::thirdFirst
 				, EChipSelectAreaX::fourthFirst, EChipSelectAreaX::fifthFirst})
 			{
+				// 一桁のマップなのにIDが10以上になったら
+				if (!chipDoubleDigitID && j + (i * 5) > 9) return;
+
+
 				// マップチップを描画
 				MapChipDraw(static_cast<int>(areaX), static_cast<int>(areaY), (j + (i * 5)));
 
@@ -323,6 +327,10 @@ void MapEditor::MapChipSelectProcess()
 					for (EChipSelectAreaX areaX : {EChipSelectAreaX::oneFirst, EChipSelectAreaX::secondFirst, EChipSelectAreaX::thirdFirst
 						, EChipSelectAreaX::fourthFirst, EChipSelectAreaX::fifthFirst})
 					{
+						// 一桁のマップなのにIDが10以上になったら
+						if (!chipDoubleDigitID && j + (i * 5) > 9) return;
+
+
 						// X座標にてマウスが入っていたら
 						if (mouseX > static_cast<int>(areaX) && mouseX < static_cast<int>(areaX) + 40)
 						{
@@ -401,8 +409,8 @@ MapEditor::MapEditor(std::vector<int>& t_mapChip, std::string& t_filePath, int& 
 MapEditor::~MapEditor()
 {
 	// マップデータを削除する
-	vv_mapdata.shrink_to_fit();
 	vv_mapdata.clear();
+	vv_mapdata.shrink_to_fit();
 }
 
 
