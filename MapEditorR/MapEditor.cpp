@@ -563,30 +563,42 @@ void MapEditor::Process()
 
 
 		// 上ボタンが押されたら
-		if (KeyData::Get(KEY_INPUT_UP) == 1)
+		if (KeyData::Get(KEY_INPUT_UP) >= 1)
 		{
 			windowLeftUpY -= mapChipSizeY;
 		}
 
 
 		// 右ボタンが押されたら
-		if (KeyData::Get(KEY_INPUT_RIGHT) == 1)
+		if (KeyData::Get(KEY_INPUT_RIGHT) >= 1)
 		{
 			windowLeftUpX += mapChipSizeX;
 		}
 
 
 		// 下ボタンが押されたら
-		if (KeyData::Get(KEY_INPUT_DOWN) == 1)
+		if (KeyData::Get(KEY_INPUT_DOWN) >= 1)
 		{
 			windowLeftUpY += mapChipSizeY;
 		}
 
 
 		// 左ボタンが押されたら
-		if (KeyData::Get(KEY_INPUT_LEFT) == 1)
+		if (KeyData::Get(KEY_INPUT_LEFT) >= 1)
 		{
 			windowLeftUpX -= mapChipSizeX;
+		}
+
+
+		//上マウスホイール
+		if (MouseWheelData::GetMouseWheel(GetMouseWheelRotVol()) > 1)
+		{
+			windowLeftUpY -= mapChipSizeY;
+		}
+		//下マウスホイール
+		else if (MouseWheelData::GetMouseWheel(GetMouseWheelRotVol()) < -1)
+		{
+			windowLeftUpY += mapChipSizeY;
 		}
 	}
 }
