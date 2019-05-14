@@ -10,15 +10,17 @@
 
 enum class EChipSelectAreaX : unsigned int
 {
-	mapRightAddFirst = 20, mapRightAddEnd = 60, mapUnderAddFirst = 80, mapUnderAddEnd = 120
-	, mapRightDelFirst = 140, mapRightDelEnd = 180 , mapUnderDelFirst = 200, mapUnderDelEnd = 240
+	oneFirst = 20, oneEnd = 60, secondFirst = 80, secondEnd = 120, thirdFirst = 140, thirdEnd = 180
+	, fourthFirst = 200, fourthEnd = 240, fifthFirst = 260, fifthEnd = 300
 };
 
 
 enum class EChipSelectAreaY : unsigned int
 {
-	oneAreaFirst = 20, oneAreaEnd = 60 , secondAreaFirst = 80 , secondAreaEnd = 120, thirdAreaFirst = 140, thirdAreaEnd = 180
-	, fourthAreaFirst = 200, fourthAreaEnd = 240
+	oneFirst = 20, oneEnd = 60 , secondFirst = 80 , secondEnd = 120, thirdFirst = 140, thirdEnd = 180
+	, fourthFirst = 200, fourthEnd = 240, fifthFirst = 260, fifthEnd = 300, sixthFirst = 320, sixthEnd = 360
+	, seventhFirst = 380, seventhEnd = 420, eighthFirst = 440, eighthEnd = 480, ninthFirst = 500, ninthEnd = 540
+	, tenthFirst = 560, tenthEnd = 600
 };
 
 
@@ -77,6 +79,9 @@ private:
 
 	// マウスの位置
 	int mouseX, mouseY;
+
+	// 選択しているマップチップID
+	int mouseSelectChipID;
 
 
 public:

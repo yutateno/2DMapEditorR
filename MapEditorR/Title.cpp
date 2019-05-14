@@ -168,12 +168,17 @@ void Title::Process()
 	// マップチップ素材を追加してもらう
 	case STEPNUMBER::chip:
 
-		// マウスホイールがクリックされたら
-		if (MouseData::GetClick(2) == 1)
+		// マップチップが一つも追加されていなかったら
+		if (vp_mapChip->size() != 0)
 		{
-			// シーンをファイルの追加に移動する
-			stepNowNum = STEPNUMBER::file;
+			// マウスホイールがクリックされたら
+			if (MouseData::GetClick(2) == 1)
+			{
+				// シーンをファイルの追加に移動する
+				stepNowNum = STEPNUMBER::file;
+			}
 		}
+
 
 		// 右クリックされたら
 		if (MouseData::GetClick(1) == 1)

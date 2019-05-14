@@ -5,10 +5,19 @@
 /// ---------------------------------------------------------------------------------------------------------------------------------------------------------
 void MapEditor::MapChipDraw(const int t_areaX, const int t_areaY, const int t_chipID)
 {
-	// マップチップ素材にないID番号の時
-	if (vp_mapChip->size() > t_chipID)
+	// マップチップ素材にあるID番号の時
+	const int temp = t_chipID - 1;
+	if (temp >= 0)
 	{
-		DrawGraph(t_areaY * mapChipSizeY, t_areaX * mapChipSizeX, vp_mapChip->at(t_chipID), true);
+		if (vp_mapChip->size() > temp)
+		{
+			DrawGraph(t_areaX, t_areaY, vp_mapChip->at(temp), true);
+		}
+		// マップチップ素材にないID番号の時
+		else
+		{
+			DrawBox(t_areaX, t_areaY, t_areaX + mapChipSizeX, t_areaY + mapChipSizeY, GetColor(50, 50, 50), true);
+		}
 	}
 }
 
@@ -191,6 +200,9 @@ MapEditor::MapEditor(std::vector<int>& t_mapChip, std::string& t_filePath, int& 
 
 	// セーブ完了のカウント初期化
 	saveEndViewCount = 0;
+
+	// 選択しているマップチップIDの初期化
+	mouseSelectChipID = 0;
 }
 
 
@@ -220,7 +232,7 @@ void MapEditor::Draw()
 	{
 		for (int j = 0, m = static_cast<int>(vv_mapdata[i].size()); j != m; ++j)
 		{
-			MapChipDraw(i, j, stoi(vv_mapdata[i][j]));
+			MapChipDraw(j * mapChipSizeX, i * mapChipSizeX, stoi(vv_mapdata[i][j]));
 		}
 	}
 
@@ -236,36 +248,51 @@ void MapEditor::Draw()
 
 		// 一列目について
 		{
-			const int yFirst = static_cast<int>(EChipSelectAreaY::oneAreaFirst);
-			const int yEnd = static_cast<int>(EChipSelectAreaY::oneAreaEnd);
+			const int yFirst = static_cast<int>(EChipSelectAreaY::oneFirst);
+			const int yEnd = static_cast<int>(EChipSelectAreaY::oneEnd);
 
 
 			// 右一列追加
-			DrawBox(static_cast<int>(EChipSelectAreaX::mapRightAddFirst), yFirst
-				, static_cast<int>(EChipSelectAreaX::mapRightAddEnd), yEnd, GetColor(255, 255, 255), true);
-			DrawBox(static_cast<int>(EChipSelectAreaX::mapRightAddEnd) - 10, yFirst
-				, static_cast<int>(EChipSelectAreaX::mapRightAddEnd), yEnd, GetColor(0, 255, 0), true);
+			DrawBox(static_cast<int>(EChipSelectAreaX::oneFirst)	, yFirst, static_cast<int>(EChipSelectAreaX::oneEnd), yEnd, GetColor(255, 255, 255), true);
+			DrawBox(static_cast<int>(EChipSelectAreaX::oneEnd) - 10	, yFirst, static_cast<int>(EChipSelectAreaX::oneEnd), yEnd, GetColor(0, 255, 0), true);
 
 
 			// 下一行追加
-			DrawBox(static_cast<int>(EChipSelectAreaX::mapUnderAddFirst), yFirst
-				, static_cast<int>(EChipSelectAreaX::mapUnderAddEnd), yEnd, GetColor(255, 255, 255), true);
-			DrawBox(static_cast<int>(EChipSelectAreaX::mapUnderAddFirst), yFirst - 10
-				, static_cast<int>(EChipSelectAreaX::mapUnderAddEnd), yEnd, GetColor(0, 255, 0), true);
+			DrawBox(static_cast<int>(EChipSelectAreaX::secondFirst), yFirst		, static_cast<int>(EChipSelectAreaX::secondEnd), yEnd, GetColor(255, 255, 255), true);
+			DrawBox(static_cast<int>(EChipSelectAreaX::secondFirst), yEnd - 10, static_cast<int>(EChipSelectAreaX::secondEnd), yEnd, GetColor(0, 255, 0), true);
 
 
 			// 右一列削除
-			DrawBox(static_cast<int>(EChipSelectAreaX::mapRightDelFirst), yFirst
-				, static_cast<int>(EChipSelectAreaX::mapRightDelEnd), yEnd, GetColor(255, 255, 255), true);
-			DrawBox(static_cast<int>(EChipSelectAreaX::mapRightDelEnd) - 10, yFirst
-				, static_cast<int>(EChipSelectAreaX::mapRightDelEnd), yEnd, GetColor(255, 0, 0), true);
+			DrawBox(static_cast<int>(EChipSelectAreaX::thirdFirst)		, yFirst, static_cast<int>(EChipSelectAreaX::thirdEnd), yEnd, GetColor(255, 255, 255), true);
+			DrawBox(static_cast<int>(EChipSelectAreaX::thirdEnd) - 10	, yFirst, static_cast<int>(EChipSelectAreaX::thirdEnd), yEnd, GetColor(255, 0, 0), true);
 
 
 			// 下一行削除
-			DrawBox(static_cast<int>(EChipSelectAreaX::mapUnderDelFirst), yFirst
-				, static_cast<int>(EChipSelectAreaX::mapUnderDelEnd), yEnd, GetColor(255, 255, 255), true);
-			DrawBox(static_cast<int>(EChipSelectAreaX::mapUnderDelFirst), yFirst - 10
-				, static_cast<int>(EChipSelectAreaX::mapUnderDelEnd), yEnd, GetColor(255, 0, 0), true);
+			DrawBox(static_cast<int>(EChipSelectAreaX::fourthFirst), yFirst		, static_cast<int>(EChipSelectAreaX::fourthEnd), yEnd, GetColor(255, 255, 255), true);
+			DrawBox(static_cast<int>(EChipSelectAreaX::fourthFirst), yEnd - 10, static_cast<int>(EChipSelectAreaX::fourthEnd), yEnd, GetColor(255, 0, 0), true);
+		}
+
+
+		// 二列目以降について
+		{
+			// 二行目以降の時
+			int i = 0;
+			for (EChipSelectAreaY areaY : {EChipSelectAreaY::secondFirst, EChipSelectAreaY::thirdFirst, EChipSelectAreaY::fourthFirst
+				, EChipSelectAreaY::fifthFirst, EChipSelectAreaY::sixthFirst, EChipSelectAreaY::seventhFirst, EChipSelectAreaY::eighthFirst
+				, EChipSelectAreaY::ninthFirst, EChipSelectAreaY::tenthFirst})
+			{
+				int tempI = static_cast<int>(areaY);
+				int j = 0;
+				for (EChipSelectAreaX areaX : {EChipSelectAreaX::oneFirst, EChipSelectAreaX::secondFirst, EChipSelectAreaX::thirdFirst
+					, EChipSelectAreaX::fourthFirst, EChipSelectAreaX::fifthFirst})
+				{
+					int tempJ = static_cast<int>(areaX);
+					MapChipDraw(tempJ, tempI, (j + (i * 5)));
+					DrawFormatString(tempJ, tempI, GetColor(255, 255, 255), "%d", j + (i * 5));
+					j++;
+				}
+				i++;
+			}
 		}
 	}
 
@@ -284,8 +311,14 @@ void MapEditor::Draw()
 	}
 
 
-	// マウスの位置を表示
-	DrawFormatString(mouseX, mouseY, GetColor(255, 255, 255), "%dx%d", mouseX, mouseY);
+	// マウスで選択しているチップを表示
+	if (mouseSelectChipID != 0)
+	{
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 125);
+		MapChipDraw(mouseX, mouseY, mouseSelectChipID);
+		DrawFormatString(mouseX + mapChipSizeX - 10, mouseY, GetColor(255, 255, 255), "%d", mouseSelectChipID);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
 }
 
 
@@ -305,7 +338,7 @@ void MapEditor::Process()
 	}
 
 
-	// セーブ官僚の表示をしているとき
+	// セーブ完了の表示をしているとき
 	if (saveEndFlag)
 	{
 		// 透過を濃くしていく
@@ -332,12 +365,12 @@ void MapEditor::Process()
 		if (MouseData::GetClick(0) == 1)
 		{
 			// 一行目の時
-			if (mouseY > static_cast<int>(EChipSelectAreaY::oneAreaFirst) && mouseY < static_cast<int>(EChipSelectAreaY::oneAreaEnd))
+			if (mouseY > static_cast<int>(EChipSelectAreaY::oneFirst) && mouseY < static_cast<int>(EChipSelectAreaY::oneEnd))
 			{
 				// 「右一列を追加する」を選択
-				if (mouseX > static_cast<int>(EChipSelectAreaX::mapRightAddFirst) && mouseX < static_cast<int>(EChipSelectAreaX::mapRightAddEnd))
+				if (mouseX > static_cast<int>(EChipSelectAreaX::oneFirst) && mouseX < static_cast<int>(EChipSelectAreaX::oneEnd))
 				{
-					std::string str = chipDoubleDigitID ? "00" : "0";
+					std::string str = chipDoubleDigitID ? "01" : "1";
 					for (size_t i = 0, n = vv_mapdata.size(); i != n; ++i) 
 					{
 						vv_mapdata[i].push_back(str);
@@ -346,14 +379,14 @@ void MapEditor::Process()
 				
 
 				// 「下一行を追加する」を選択
-				if (mouseX > static_cast<int>(EChipSelectAreaX::mapUnderAddFirst) && mouseX < static_cast<int>(EChipSelectAreaX::mapUnderAddEnd))
+				if (mouseX > static_cast<int>(EChipSelectAreaX::secondFirst) && mouseX < static_cast<int>(EChipSelectAreaX::secondEnd))
 				{
 					vv_mapdata.push_back(vv_mapdata.back());
 				}
 
 
 				// 「右一列を削除する」を選択
-				if (mouseX > static_cast<int>(EChipSelectAreaX::mapRightDelFirst) && mouseX < static_cast<int>(EChipSelectAreaX::mapRightDelEnd))
+				if (mouseX > static_cast<int>(EChipSelectAreaX::thirdFirst) && mouseX < static_cast<int>(EChipSelectAreaX::thirdEnd))
 				{
 					if (vv_mapdata[0].size() >= 2)
 					{
@@ -366,15 +399,39 @@ void MapEditor::Process()
 
 
 				// 「下一行を削除する」を選択
-				if (mouseX > static_cast<int>(EChipSelectAreaX::mapUnderDelFirst) && mouseX < static_cast<int>(EChipSelectAreaX::mapUnderDelEnd))
+				if (mouseX > static_cast<int>(EChipSelectAreaX::fourthFirst) && mouseX < static_cast<int>(EChipSelectAreaX::fourthEnd))
 				{
 					if (vv_mapdata.size() >= 2)
 					{
 						vv_mapdata.pop_back();
 					}
 				}
+			} /// // 一行目の時
+			// 二行目以降の時
+			int i = 0;
+			for (EChipSelectAreaY areaY : {EChipSelectAreaY::secondFirst, EChipSelectAreaY::thirdFirst, EChipSelectAreaY::fourthFirst
+				, EChipSelectAreaY::fifthFirst, EChipSelectAreaY::sixthFirst, EChipSelectAreaY::seventhFirst, EChipSelectAreaY::eighthFirst
+				, EChipSelectAreaY::ninthFirst, EChipSelectAreaY::tenthFirst})
+			{
+				int tempI = static_cast<int>(areaY);
+				int j = 0;
+				if (mouseY > tempI && mouseY < tempI + 40)
+				{
+					// チップを選択
+					for (EChipSelectAreaX areaX : {EChipSelectAreaX::oneFirst, EChipSelectAreaX::secondFirst, EChipSelectAreaX::thirdFirst
+						, EChipSelectAreaX::fourthFirst, EChipSelectAreaX::fifthFirst})
+					{
+						int tempJ = static_cast<int>(areaX);
+						if (mouseX > tempJ && mouseX < tempJ + 40)
+						{
+							mouseSelectChipID = (j + (i * 5));
+						}
+						j++;
+					}
+				}
+				i++;
 			}
-		}
+		} /// if (MouseData::GetClick(0) == 1)
 	}
 	// マップチップ選択画面が表示されていなかったら
 	else
