@@ -7,6 +7,21 @@
 
 
 
+
+enum class EChipSelectAreaX : unsigned int
+{
+	mapRightAddFirst = 20, mapRightAddEnd = 60, mapUnderAddFirst = 80, mapUnderAddEnd = 120
+	, mapRightDelFirst = 140, mapRightDelEnd = 180 , mapUnderDelFirst = 200, mapUnderDelEnd = 240
+};
+
+
+enum class EChipSelectAreaY : unsigned int
+{
+	oneAreaFirst = 20, oneAreaEnd = 60 , secondAreaFirst = 80 , secondAreaEnd = 120, thirdAreaFirst = 140, thirdAreaEnd = 180
+	, fourthAreaFirst = 200, fourthAreaEnd = 240
+};
+
+
 /*
 マップエディター
 */

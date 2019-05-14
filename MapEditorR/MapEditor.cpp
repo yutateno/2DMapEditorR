@@ -209,10 +209,10 @@ MapEditor::~MapEditor()
 void MapEditor::Draw()
 {
 	// 背景画像を描画する
-	//if (*p_backGround != -1)
-	//{
+	if (*p_backGround != -1)
+	{
 		DrawGraph(0, 0, *p_backGround, false);
-	//}
+	}
 
 
 	// マップデータからマップチップを配置したものを描画する
@@ -232,6 +232,41 @@ void MapEditor::Draw()
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 225);
 		DrawBox(0, 0, 320, 720, GetColor(125, 125, 125), true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+
+		// 一列目について
+		{
+			const int yFirst = static_cast<int>(EChipSelectAreaY::oneAreaFirst);
+			const int yEnd = static_cast<int>(EChipSelectAreaY::oneAreaEnd);
+
+
+			// 右一列追加
+			DrawBox(static_cast<int>(EChipSelectAreaX::mapRightAddFirst), yFirst
+				, static_cast<int>(EChipSelectAreaX::mapRightAddEnd), yEnd, GetColor(255, 255, 255), true);
+			DrawBox(static_cast<int>(EChipSelectAreaX::mapRightAddEnd) - 10, yFirst
+				, static_cast<int>(EChipSelectAreaX::mapRightAddEnd), yEnd, GetColor(0, 255, 0), true);
+
+
+			// 下一行追加
+			DrawBox(static_cast<int>(EChipSelectAreaX::mapUnderAddFirst), yFirst
+				, static_cast<int>(EChipSelectAreaX::mapUnderAddEnd), yEnd, GetColor(255, 255, 255), true);
+			DrawBox(static_cast<int>(EChipSelectAreaX::mapUnderAddFirst), yFirst - 10
+				, static_cast<int>(EChipSelectAreaX::mapUnderAddEnd), yEnd, GetColor(0, 255, 0), true);
+
+
+			// 右一列削除
+			DrawBox(static_cast<int>(EChipSelectAreaX::mapRightDelFirst), yFirst
+				, static_cast<int>(EChipSelectAreaX::mapRightDelEnd), yEnd, GetColor(255, 255, 255), true);
+			DrawBox(static_cast<int>(EChipSelectAreaX::mapRightDelEnd) - 10, yFirst
+				, static_cast<int>(EChipSelectAreaX::mapRightDelEnd), yEnd, GetColor(255, 0, 0), true);
+
+
+			// 下一行削除
+			DrawBox(static_cast<int>(EChipSelectAreaX::mapUnderDelFirst), yFirst
+				, static_cast<int>(EChipSelectAreaX::mapUnderDelEnd), yEnd, GetColor(255, 255, 255), true);
+			DrawBox(static_cast<int>(EChipSelectAreaX::mapUnderDelFirst), yFirst - 10
+				, static_cast<int>(EChipSelectAreaX::mapUnderDelEnd), yEnd, GetColor(255, 0, 0), true);
+		}
 	}
 
 	
@@ -247,6 +282,10 @@ void MapEditor::Draw()
 		DrawFormatString(0, 730, GetColor(255, 0, 0), "　　　　　　　　　　　　　　　　　　    　　　　　　　　　　　　　　　　　　　         　セーブしました。");
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
+
+
+	// マウスの位置を表示
+	DrawFormatString(mouseX, mouseY, GetColor(255, 255, 255), "%dx%d", mouseX, mouseY);
 }
 
 
@@ -283,5 +322,63 @@ void MapEditor::Process()
 	{
 		// マップチップ選択画面のフラッグを直前の逆にする
 		selectMapChipWindow = !selectMapChipWindow;
+	}
+
+
+	// マップチップ選択画面が表示されていたら
+	if (selectMapChipWindow)
+	{
+		// 左クリックされたら
+		if (MouseData::GetClick(0) == 1)
+		{
+			// 一行目の時
+			if (mouseY > static_cast<int>(EChipSelectAreaY::oneAreaFirst) && mouseY < static_cast<int>(EChipSelectAreaY::oneAreaEnd))
+			{
+				// 「右一列を追加する」を選択
+				if (mouseX > static_cast<int>(EChipSelectAreaX::mapRightAddFirst) && mouseX < static_cast<int>(EChipSelectAreaX::mapRightAddEnd))
+				{
+					std::string str = chipDoubleDigitID ? "00" : "0";
+					for (size_t i = 0, n = vv_mapdata.size(); i != n; ++i) 
+					{
+						vv_mapdata[i].push_back(str);
+					}
+				}
+				
+
+				// 「下一行を追加する」を選択
+				if (mouseX > static_cast<int>(EChipSelectAreaX::mapUnderAddFirst) && mouseX < static_cast<int>(EChipSelectAreaX::mapUnderAddEnd))
+				{
+					vv_mapdata.push_back(vv_mapdata.back());
+				}
+
+
+				// 「右一列を削除する」を選択
+				if (mouseX > static_cast<int>(EChipSelectAreaX::mapRightDelFirst) && mouseX < static_cast<int>(EChipSelectAreaX::mapRightDelEnd))
+				{
+					if (vv_mapdata[0].size() >= 2)
+					{
+						for (size_t i = 0, n = vv_mapdata.size(); i != n; ++i)
+						{
+							vv_mapdata[i].pop_back();
+						}
+					}
+				}
+
+
+				// 「下一行を削除する」を選択
+				if (mouseX > static_cast<int>(EChipSelectAreaX::mapUnderDelFirst) && mouseX < static_cast<int>(EChipSelectAreaX::mapUnderDelEnd))
+				{
+					if (vv_mapdata.size() >= 2)
+					{
+						vv_mapdata.pop_back();
+					}
+				}
+			}
+		}
+	}
+	// マップチップ選択画面が表示されていなかったら
+	else
+	{
+
 	}
 }

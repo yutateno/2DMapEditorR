@@ -103,7 +103,4 @@ void Manager::Update()
 		// 直前のシーンと現在のシーンを同じにする
 		BASICPARAM::e_preScene = BASICPARAM::e_nowScene;
 	}
-
-
-	printfDx("%d\n", m_backGround);
 }
